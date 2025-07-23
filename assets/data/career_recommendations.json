@@ -1,0 +1,114 @@
+{
+  "Arts": {
+    "internships": [
+      "Art Gallery Assistant Intern",
+      "Creative Writing Intern at Local Magazine",
+      "Graphic Design Intern at Non-Profit",
+      "Museum Education Intern",
+      "Theatre Production Assistant Intern"
+    ],
+    "certifications": [
+      "Coursera: Graphic Design Specialization",
+      "Skillshare: Creative Writing Masterclass",
+      "Udemy: Digital Painting and Illustration",
+      "edX: The Language of Hollywood",
+      "LinkedIn Learning: Visual Storytelling Techniques"
+    ]
+  },
+  "Law": {
+    "internships": [
+      "Legal Intern at Law Firm",
+      "Court Clerkship Intern",
+      "Legal Research Intern at NGO",
+      "Paralegal Assistant Internship",
+      "Policy Research Intern in Government Office"
+    ],
+    "certifications": [
+      "edX: International Law",
+      "Coursera: Legal Research Skills",
+      "Udemy: Contract Law for Beginners",
+      "LinkedIn Learning: Legal Writing Skills",
+      "FutureLearn: Human Rights Law"
+    ]
+  },
+  "Medicine": {
+    "internships": [
+      "Medical Intern at Local Clinic",
+      "Research Assistant in Medical College",
+      "Public Health Intern with NGO",
+      "Pharmacy Technician Intern",
+      "Hospital Administration Intern"
+    ],
+    "certifications": [
+      "Coursera: Anatomy Specialization",
+      "edX: Essentials of Global Health",
+      "Udemy: First Aid and CPR Certification",
+      "FutureLearn: Nutrition and Health",
+      "HarvardX: Fundamentals of Neuroscience"
+    ]
+  },
+  "Computer Science": {
+    "internships": [
+      "Software Development Intern",
+      "Machine Learning Intern",
+      "Web Development Intern",
+      "Cybersecurity Research Intern",
+      "Mobile App Development Intern"
+    ],
+    "certifications": [
+      "Coursera: Google IT Automation with Python",
+      "Udemy: Complete Python Bootcamp",
+      "edX: CS50's Introduction to Computer Science (Harvard)",
+      "LinkedIn Learning: JavaScript Essentials",
+      "IBM: Data Science Professional Certificate"
+    ]
+  },
+  "Engineering": {
+    "internships": [
+      "Mechanical Design Intern",
+      "Civil Engineering Site Intern",
+      "Electrical Engineering Intern at Power Plant",
+      "Robotics Intern at Research Lab",
+      "CAD Design Intern"
+    ],
+    "certifications": [
+      "Coursera: Applied Data Science with Python",
+      "edX: Structural Engineering Fundamentals",
+      "Udemy: AutoCAD 2D and 3D",
+      "LinkedIn Learning: Project Management for Engineers",
+      "NPTEL: Engineering Mechanics"
+    ]
+  },
+  "Business": {
+    "internships": [
+      "Marketing and Sales Intern",
+      "Business Analyst Intern",
+      "Human Resources Intern",
+      "Finance Intern at Startup",
+      "Operations Intern at E-commerce Company"
+    ],
+    "certifications": [
+      "Coursera: Business Foundations Specialization",
+      "Google: Digital Marketing Certification",
+      "LinkedIn Learning: Excel for Business",
+      "Harvard Business School Online: CORe",
+      "Udemy: Financial Analysis for Beginners"
+    ]
+  },
+  "Mathematics": {
+    "internships": [
+      "Data Analyst Intern",
+      "Quantitative Research Intern",
+      "Actuarial Intern",
+      "Research Intern in Math Department",
+      "Statistics Intern at Healthcare Company"
+    ],
+    "certifications": [
+      "Coursera: Introduction to Data Science in Python",
+      "edX: Linear Algebra - Foundations to Frontiers",
+      "Udemy: Probability and Statistics Masterclass",
+      "LinkedIn Learning: Data Visualization with Excel",
+      "MIT OpenCourseWare: Calculus Revisited"
+    ]
+  }
+}
