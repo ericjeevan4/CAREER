@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+
+import '../shared/ai_suggestion_screen.dart';
 import 'dashboard_screen.dart';
 
 class ProfileFormScreen extends StatefulWidget {
@@ -13,7 +17,7 @@ class ProfileFormScreen extends StatefulWidget {
 class _ProfileFormScreenState extends State<ProfileFormScreen> {
   final _formKey = GlobalKey<FormState>();
   final Map<String, dynamic> _formData = {
-    'gender': 'Male', // default gender
+    'gender': 'Male',
   };
 
   void _showBottomSheet() {
@@ -31,11 +35,8 @@ class _ProfileFormScreenState extends State<ProfileFormScreen> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                const Icon(
-                  Icons.psychology_alt_rounded,
-                  size: 48,
-                  color: Color(0xFF6A1B9A),
-                ),
+                const Icon(Icons.psychology_alt_rounded,
+                    size: 48, color: Color(0xFF6A1B9A)),
                 const SizedBox(height: 12),
                 const Text(
                   "Let our AI analyze your profile and suggest the right career path!",
@@ -54,10 +55,8 @@ class _ProfileFormScreenState extends State<ProfileFormScreen> {
                             borderRadius: BorderRadius.circular(12),
                           ),
                         ),
-                        child: const Text(
-                          "Cancel",
-                          style: TextStyle(fontSize: 16),
-                        ),
+                        child: const Text("Cancel",
+                            style: TextStyle(fontSize: 16)),
                       ),
                     ),
                     const SizedBox(width: 16),
@@ -108,10 +107,10 @@ class _ProfileFormScreenState extends State<ProfileFormScreen> {
             children: _formData.entries
                 .map(
                   (e) => Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 4),
-                    child: Text("${e.key.toUpperCase()}: ${e.value}"),
-                  ),
-                )
+                padding: const EdgeInsets.symmetric(vertical: 4),
+                child: Text("${e.key.toUpperCase()}: ${e.value}"),
+              ),
+            )
                 .toList(),
           ),
         ),
@@ -135,10 +134,10 @@ class _ProfileFormScreenState extends State<ProfileFormScreen> {
             .collection('students')
             .doc(user.uid)
             .set({
-              ..._formData,
-              'email': user.email ?? '',
-              'timestamp': Timestamp.now(),
-            });
+          ..._formData,
+          'email': user.email ?? '',
+          'timestamp': Timestamp.now(),
+        });
       } catch (e) {
         debugPrint("🔥 Firestore error: $e");
         ScaffoldMessenger.of(context).showSnackBar(
@@ -148,17 +147,43 @@ class _ProfileFormScreenState extends State<ProfileFormScreen> {
       }
     }
 
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(builder: (_) => const StudentDashboardScreen()),
-    );
+    try {
+      final response = await http.post(
+        Uri.parse('https://streamlit-1-wvtj.onrender.com/predict'),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({
+          'age': int.tryParse(_formData['age'] ?? '') ?? 0,
+          'hobby': _formData['hobbies'] ?? '',
+          'entrepreneurship': 'Yes', // hardcoded, or ask user later
+          'favorite_subject': _formData['favorite_subject'] ?? '',
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        final result = jsonDecode(response.body);
+        final career = result['predicted_career'] ?? 'Unknown';
+
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (_) => AiSuggestionScreen(career: career),
+          ),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("API Error: ${response.body}")),
+        );
+      }
+    } catch (e) {
+      debugPrint("❌ API error: $e");
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Failed to connect to AI service")),
+      );
+    }
   }
 
-  Widget _buildTextField(
-    String label,
-    String key, {
-    TextInputType keyboardType = TextInputType.text,
-  }) {
+  Widget _buildTextField(String label, String key,
+      {TextInputType keyboardType = TextInputType.text}) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 10),
       child: TextFormField(
@@ -173,7 +198,7 @@ class _ProfileFormScreenState extends State<ProfileFormScreen> {
           ),
         ),
         validator: (value) =>
-            (value == null || value.isEmpty) ? "Enter $label" : null,
+        (value == null || value.isEmpty) ? "Enter $label" : null,
         onSaved: (value) => _formData[key] = value!,
       ),
     );
@@ -240,11 +265,8 @@ class _ProfileFormScreenState extends State<ProfileFormScreen> {
                   ),
                   const SizedBox(height: 10),
                   _buildTextField("Name", "name"),
-                  _buildTextField(
-                    "Age",
-                    "age",
-                    keyboardType: TextInputType.number,
-                  ),
+                  _buildTextField("Age", "age",
+                      keyboardType: TextInputType.number),
                   _buildGenderDropdown(),
                   _buildTextField("Favorite Subject", "favorite_subject"),
                   _buildTextField("Hobbies", "hobbies"),

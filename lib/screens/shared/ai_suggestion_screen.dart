@@ -1,48 +1,61 @@
 import 'package:flutter/material.dart';
+import '../student/dashboard_screen.dart';
 
 class AiSuggestionScreen extends StatelessWidget {
-  const AiSuggestionScreen({super.key});
+  final String career;
 
-  final suggestions = const [
-    {
-      'title': 'Data Scientist',
-      'description': 'Work with big data, AI models, and predictive analytics.',
-    },
-    {
-      'title': 'UX Designer',
-      'description': 'Design user-friendly interfaces and improve usability.',
-    },
-    {
-      'title': 'Mechanical Engineer',
-      'description': 'Design and manufacture mechanical systems.',
-    },
-    {
-      'title': 'Entrepreneur',
-      'description': 'Start and grow your own business idea.',
-    },
-  ];
+  const AiSuggestionScreen({super.key, required this.career});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("AI Career Suggestions")),
-      body: ListView.builder(
-        padding: const EdgeInsets.all(16),
-        itemCount: suggestions.length,
-        itemBuilder: (context, index) {
-          final suggestion = suggestions[index];
-          return Card(
-            elevation: 3,
-            child: ListTile(
-              leading: const Icon(Icons.auto_awesome, color: Colors.deepPurple),
-              title: Text(
-                suggestion['title']!,
-                style: const TextStyle(fontWeight: FontWeight.bold),
+      appBar: AppBar(
+        title: const Text("AI Career Suggestion"),
+        backgroundColor: Colors.deepPurple,
+        foregroundColor: Colors.white,
+      ),
+      body: Center(
+        child: Padding(
+          padding: const EdgeInsets.all(24.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Icon(Icons.lightbulb_outline, size: 100, color: Colors.deepPurple),
+              const SizedBox(height: 24),
+              const Text(
+                "Your Suggested Career Path",
+                style: TextStyle(fontSize: 22, fontWeight: FontWeight.w600),
               ),
-              subtitle: Text(suggestion['description']!),
-            ),
-          );
-        },
+              const SizedBox(height: 16),
+              Text(
+                career,
+                style: const TextStyle(
+                  fontSize: 28,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.deepPurple,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 32),
+              ElevatedButton.icon(
+                onPressed: () {
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(builder: (_) => const StudentDashboardScreen()),
+                  );
+                },
+                icon: const Icon(Icons.dashboard),
+                label: const Text("Go to Dashboard"),
+                style: ElevatedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
+                  backgroundColor: Colors.deepPurple,
+                  foregroundColor: Colors.white,
+                  textStyle: const TextStyle(fontSize: 16),
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }

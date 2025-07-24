@@ -1,4 +1,5 @@
 import 'package:career_guidance/screens/mentor/dashboard_screen.dart';
+import 'package:career_guidance/screens/shared/ai_suggestion_screen.dart';
 import 'package:career_guidance/screens/student/dashboard_screen.dart';
 import 'package:career_guidance/screens/shared/role_selection_screen.dart';
 import 'package:flutter/material.dart';
@@ -63,6 +64,18 @@ class MyApp extends StatelessWidget {
           ),
         ),
       ),
+
+      // ✅ Use onGenerateRoute to pass arguments to AiSuggestionScreen
+      onGenerateRoute: (settings) {
+        if (settings.name == '/ai') {
+          final args = settings.arguments as String;
+          return MaterialPageRoute(
+            builder: (_) => AiSuggestionScreen(career: args),
+          );
+        }
+        return null; // Let it fall back if no matching route
+      },
+
       home: FutureBuilder<Widget>(
         future: _determineStartScreen(),
         builder: (context, snapshot) {
