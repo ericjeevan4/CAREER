@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show rootBundle;
-import 'career_detail_screen.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class CareerPortalScreen extends StatefulWidget {
   const CareerPortalScreen({super.key});
@@ -11,7 +11,7 @@ class CareerPortalScreen extends StatefulWidget {
 }
 
 class _CareerPortalScreenState extends State<CareerPortalScreen> {
-  Map<String, dynamic> careerData = {};
+  List<dynamic> careerData = [];
 
   @override
   void initState() {
@@ -25,17 +25,15 @@ class _CareerPortalScreenState extends State<CareerPortalScreen> {
     );
     final Map<String, dynamic> jsonMap = json.decode(jsonString);
     setState(() {
-      careerData = jsonMap;
+      careerData = jsonMap['career_recommendations'];
     });
   }
 
-  void _navigateToDetail(String field, String category) {
-    final items = List<String>.from(careerData[field]?[category] ?? []);
+  void _navigateToDetail(Map<String, dynamic> career) {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) =>
-            CareerDetailScreen(field: field, category: category, items: items),
+        builder: (context) => CareerDetailScreen(career: career),
       ),
     );
   }
@@ -46,41 +44,93 @@ class _CareerPortalScreenState extends State<CareerPortalScreen> {
       appBar: AppBar(title: const Text("Career Recommendations")),
       body: careerData.isEmpty
           ? const Center(child: CircularProgressIndicator())
-          : ListView(
-              padding: const EdgeInsets.all(16),
-              children: careerData.entries.map((entry) {
-                final field = entry.key;
-
-                return Card(
-                  margin: const EdgeInsets.only(bottom: 16),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  elevation: 3,
-                  child: ExpansionTile(
-                    title: Text(
-                      field,
-                      style: const TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    children: [
-                      ListTile(
-                        leading: const Icon(Icons.work_outline),
-                        title: const Text("Internships"),
-                        onTap: () => _navigateToDetail(field, "internships"),
-                      ),
-                      ListTile(
-                        leading: const Icon(Icons.school_outlined),
-                        title: const Text("Certifications"),
-                        onTap: () => _navigateToDetail(field, "certifications"),
-                      ),
-                    ],
-                  ),
-                );
-              }).toList(),
+          : ListView.builder(
+        padding: const EdgeInsets.all(16),
+        itemCount: careerData.length,
+        itemBuilder: (context, index) {
+          final career = careerData[index];
+          return Card(
+            margin: const EdgeInsets.only(bottom: 16),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
             ),
+            elevation: 3,
+            child: ListTile(
+              title: Text(
+                career['title'],
+                style: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              subtitle: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Certifications: ${career['certifications'].length}',
+                    style: const TextStyle(fontSize: 14),
+                  ),
+                  Text(
+                    'Internships: ${career['internships'].length}',
+                    style: const TextStyle(fontSize: 14),
+                  ),
+                ],
+              ),
+              onTap: () => _navigateToDetail(career),
+            ),
+          );
+        },
+      ),
+    );
+  }
+}
+
+class CareerDetailScreen extends StatelessWidget {
+  final Map<String, dynamic> career;
+
+  const CareerDetailScreen({super.key, required this.career});
+
+  Future<void> _launchURL(String url) async {
+    if (await canLaunchUrl(Uri.parse(url))) {
+      await launchUrl(Uri.parse(url));
+    } else {
+      throw 'Could not launch $url';
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: Text(career['title'])),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              'Certifications',
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 8),
+            ...career['certifications'].map<Widget>((cert) => ListTile(
+              title: Text(cert['title']),
+              trailing: const Icon(Icons.open_in_new),
+              onTap: () => _launchURL(cert['link']),
+            )),
+            const SizedBox(height: 16),
+            const Text(
+              'Internships',
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 8),
+            ...career['internships'].map<Widget>((intern) => ListTile(
+              title: Text(intern['title']),
+              trailing: const Icon(Icons.open_in_new),
+              onTap: () => _launchURL(intern['link']),
+            )),
+          ],
+        ),
+      ),
     );
   }
 }

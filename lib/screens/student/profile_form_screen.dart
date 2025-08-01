@@ -4,8 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
-import '../shared/ai_suggestion_screen.dart';
-import 'dashboard_screen.dart';
+import '../shared/ai_suggestion_screen.dart'; // ✅ Make sure this import path is correct
 
 class ProfileFormScreen extends StatefulWidget {
   const ProfileFormScreen({super.key});
@@ -16,8 +15,28 @@ class ProfileFormScreen extends StatefulWidget {
 
 class _ProfileFormScreenState extends State<ProfileFormScreen> {
   final _formKey = GlobalKey<FormState>();
-  final Map<String, dynamic> _formData = {
-    'gender': 'Male',
+  final Map<String, dynamic> _formData = {};
+
+  final Map<String, List<String>> dropdownOptions = {
+    'field': [
+      'Engineering', 'Chemistry', 'Physics', 'Law', 'Marketing', 'Medicine',
+      'Computer Science', 'Education', 'Business', 'Architecture', 'Music',
+      'Biology', 'Finance', 'Psychology', 'Art'
+    ],
+    'extracurricular_activities': ['Excellent', 'Basic', 'Good', 'None', 'Average', 'Very Good', 'Expert'],
+    'internships': ['None', 'Average', 'Basic'],
+    'projects': ['Average', 'None', 'Good', 'Very Good', 'Basic'],
+    'leadership_positions': ['None', 'Basic'],
+    'field_specific_courses': ['Good', 'Expert', 'Excellent', 'Basic', 'None', 'Average', 'Very Good'],
+    'research_experience': ['Basic', 'None'],
+    'coding_skills': ['Very Good', 'Good', 'Basic', 'None', 'Average'],
+    'communication_skills': ['Very Good', 'Basic', 'Average', 'Good', 'None'],
+    'problem_solving_skills': ['Average', 'None', 'Basic', 'Good', 'Very Good'],
+    'teamwork_skills': ['Average', 'Good', 'Basic', 'Very Good', 'None'],
+    'analytical_skills': ['Basic', 'None', 'Average', 'Very Good', 'Good'],
+    'presentation_skills': ['None', 'Good', 'Basic', 'Average', 'Very Good'],
+    'networking_skills': ['Basic', 'None', 'Very Good', 'Average', 'Good'],
+    'industry_certifications': ['Basic', 'None'],
   };
 
   void _showBottomSheet() {
@@ -94,38 +113,75 @@ class _ProfileFormScreenState extends State<ProfileFormScreen> {
       );
     }
   }
-
   void _showProfileSummary() {
     Navigator.pop(context);
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text("Your Profile Summary"),
-        content: SingleChildScrollView(
+      builder: (context) => Dialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
+        ),
+        child: Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(20),
+            gradient: const LinearGradient(
+              colors: [Color(0xFFA59CA8), Color(0xFFA59CA8)],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+          ),
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: _formData.entries
-                .map(
-                  (e) => Padding(
-                padding: const EdgeInsets.symmetric(vertical: 4),
-                child: Text("${e.key.toUpperCase()}: ${e.value}"),
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(16),
+                child: Text(
+                  "Your Profile Summary",
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
+                ),
               ),
-            )
-                .toList(),
+              Container(
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.only(
+                    bottomLeft: Radius.circular(20),
+                    bottomRight: Radius.circular(20),
+                  ),
+                ),
+                padding: const EdgeInsets.all(16),
+                child: SingleChildScrollView(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: _formData.entries
+                        .map(
+                          (e) => Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 4),
+                        child: Text("${e.key.toUpperCase()}: ${e.value}"),
+                      ),
+                    )
+                        .toList(),
+                  ),
+                ),
+              ),
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: Text(
+                  "Close",
+                  style: TextStyle(color: Colors.white),
+                ),
+              ),
+            ],
           ),
         ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text("Close"),
-          ),
-        ],
       ),
     );
   }
-
   Future<void> _goToDashboard() async {
-    Navigator.pop(context); // Close bottom sheet
+    Navigator.pop(context);
 
     final user = FirebaseAuth.instance.currentUser;
     if (user != null) {
@@ -147,43 +203,74 @@ class _ProfileFormScreenState extends State<ProfileFormScreen> {
       }
     }
 
+    final url = Uri.parse("https://flask-api-y4tt.onrender.com/predict");
+
     try {
       final response = await http.post(
-        Uri.parse('https://streamlit-1-wvtj.onrender.com/predict'),
+        url,
         headers: {'Content-Type': 'application/json'},
-        body: jsonEncode({
-          'age': int.tryParse(_formData['age'] ?? '') ?? 0,
-          'hobby': _formData['hobbies'] ?? '',
-          'entrepreneurship': 'Yes', // hardcoded, or ask user later
-          'favorite_subject': _formData['favorite_subject'] ?? '',
+        body: json.encode({
+          "Field": _formData['field'],
+          "GPA": double.tryParse(_formData['gpa']) ?? 0.0,
+          "Extracurricular_Activities": _formData['extracurricular_activities'],
+          "Internships": _formData['internships'],
+          "Projects": _formData['projects'],
+          "Leadership_Positions": _formData['leadership_positions'],
+          "Field_Specific_Courses": _formData['field_specific_courses'],
+          "Research_Experience": _formData['research_experience'],
+          "Coding_Skills": _formData['coding_skills'],
+          "Communication_Skills": _formData['communication_skills'],
+          "Problem_Solving_Skills": _formData['problem_solving_skills'],
+          "Teamwork_Skills": _formData['teamwork_skills'],
+          "Analytical_Skills": _formData['analytical_skills'],
+          "Presentation_Skills": _formData['presentation_skills'],
+          "Networking_Skills": _formData['networking_skills'],
+          "Industry_Certifications": _formData['industry_certifications'],
         }),
       );
 
       if (response.statusCode == 200) {
-        final result = jsonDecode(response.body);
-        final career = result['predicted_career'] ?? 'Unknown';
-
+        final prediction = json.decode(response.body)['predicted_career'];
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
-            builder: (_) => AiSuggestionScreen(career: career),
+            builder: (_) => AiSuggestionScreen(career: prediction),
           ),
         );
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("API Error: ${response.body}")),
-        );
+        throw Exception("Failed to get prediction: ${response.body}");
       }
     } catch (e) {
-      debugPrint("❌ API error: $e");
+      debugPrint("🧨 API error: $e");
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Failed to connect to AI service")),
+        const SnackBar(content: Text("Error fetching AI suggestion")),
       );
     }
   }
 
   Widget _buildTextField(String label, String key,
       {TextInputType keyboardType = TextInputType.text}) {
+    if (dropdownOptions.containsKey(key)) {
+      return Padding(
+        padding: const EdgeInsets.symmetric(vertical: 10),
+        child: DropdownButtonFormField<String>(
+          decoration: InputDecoration(
+            labelText: label,
+            filled: true,
+            fillColor: Colors.grey[100],
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: BorderSide.none,
+            ),
+          ),
+          items: dropdownOptions[key]!
+              .map((value) => DropdownMenuItem(value: value, child: Text(value)))
+              .toList(),
+          validator: (value) => (value == null || value.isEmpty) ? "Select $label" : null,
+          onChanged: (value) => _formData[key] = value!,
+        ),
+      );
+    }
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 10),
       child: TextFormField(
@@ -197,34 +284,8 @@ class _ProfileFormScreenState extends State<ProfileFormScreen> {
             borderSide: BorderSide.none,
           ),
         ),
-        validator: (value) =>
-        (value == null || value.isEmpty) ? "Enter $label" : null,
+        validator: (value) => (value == null || value.isEmpty) ? "Enter $label" : null,
         onSaved: (value) => _formData[key] = value!,
-      ),
-    );
-  }
-
-  Widget _buildGenderDropdown() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 10),
-      child: DropdownButtonFormField<String>(
-        value: _formData['gender'],
-        decoration: InputDecoration(
-          labelText: "Gender",
-          filled: true,
-          fillColor: Colors.grey[100],
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(12),
-            borderSide: BorderSide.none,
-          ),
-        ),
-        items: const [
-          DropdownMenuItem(value: "Male", child: Text("Male")),
-          DropdownMenuItem(value: "Female", child: Text("Female")),
-          DropdownMenuItem(value: "Other", child: Text("Other")),
-        ],
-        onChanged: (val) => setState(() => _formData['gender'] = val),
-        onSaved: (val) => _formData['gender'] = val!,
       ),
     );
   }
@@ -249,7 +310,7 @@ class _ProfileFormScreenState extends State<ProfileFormScreen> {
               borderRadius: BorderRadius.circular(24),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.deepPurple.withOpacity(0.05),
+                  color: Colors.deepPurple.withAlpha((0.05 * 255).toInt()),
                   blurRadius: 15,
                   offset: const Offset(0, 10),
                 ),
@@ -265,11 +326,22 @@ class _ProfileFormScreenState extends State<ProfileFormScreen> {
                   ),
                   const SizedBox(height: 10),
                   _buildTextField("Name", "name"),
-                  _buildTextField("Age", "age",
-                      keyboardType: TextInputType.number),
-                  _buildGenderDropdown(),
-                  _buildTextField("Favorite Subject", "favorite_subject"),
-                  _buildTextField("Hobbies", "hobbies"),
+                  _buildTextField("Field", "field"),
+                  _buildTextField("GPA", "gpa", keyboardType: TextInputType.number),
+                  _buildTextField("Extracurricular Activities", "extracurricular_activities"),
+                  _buildTextField("Internships", "internships"),
+                  _buildTextField("Projects", "projects"),
+                  _buildTextField("Leadership Positions", "leadership_positions"),
+                  _buildTextField("Field Specific Courses", "field_specific_courses"),
+                  _buildTextField("Research Experience", "research_experience"),
+                  _buildTextField("Coding Skills", "coding_skills"),
+                  _buildTextField("Communication Skills", "communication_skills"),
+                  _buildTextField("Problem Solving Skills", "problem_solving_skills"),
+                  _buildTextField("Teamwork Skills", "teamwork_skills"),
+                  _buildTextField("Analytical Skills", "analytical_skills"),
+                  _buildTextField("Presentation Skills", "presentation_skills"),
+                  _buildTextField("Networking Skills", "networking_skills"),
+                  _buildTextField("Industry Certifications", "industry_certifications"),
                   const SizedBox(height: 24),
                   Container(
                     width: double.infinity,
@@ -277,7 +349,7 @@ class _ProfileFormScreenState extends State<ProfileFormScreen> {
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(30),
                       gradient: const LinearGradient(
-                        colors: [Color(0xFF7B1FA2), Color(0xFFE040FB)],
+                        colors: [Color(0xFFA59CA8), Color(0xFFA59CA8)],
                       ),
                     ),
                     child: InkWell(

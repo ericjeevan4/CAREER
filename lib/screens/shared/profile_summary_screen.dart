@@ -97,7 +97,7 @@ class _ProfileSummaryScreenState extends State<ProfileSummaryScreen> {
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(20),
                   gradient: const LinearGradient(
-                    colors: [Color(0xFF7B1FA2), Color(0xFFE040FB)],
+                    colors: [Color(0xFFFFFFFF), Color(0xFFFFFFFF)],
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
                   ),
