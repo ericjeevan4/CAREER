@@ -113,73 +113,36 @@ class _ProfileFormScreenState extends State<ProfileFormScreen> {
       );
     }
   }
+
   void _showProfileSummary() {
     Navigator.pop(context);
     showDialog(
       context: context,
-      builder: (context) => Dialog(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20),
-        ),
-        child: Container(
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(20),
-            gradient: const LinearGradient(
-              colors: [Color(0xFFA59CA8), Color(0xFFA59CA8)],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ),
-          ),
+      builder: (context) => AlertDialog(
+        title: const Text("Your Profile Summary"),
+        content: SingleChildScrollView(
           child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Padding(
-                padding: const EdgeInsets.all(16),
-                child: Text(
-                  "Your Profile Summary",
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                  ),
-                ),
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: _formData.entries
+                .map(
+                  (e) => Padding(
+                padding: const EdgeInsets.symmetric(vertical: 4),
+                child: Text("${e.key.toUpperCase()}: ${e.value}"),
               ),
-              Container(
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.only(
-                    bottomLeft: Radius.circular(20),
-                    bottomRight: Radius.circular(20),
-                  ),
-                ),
-                padding: const EdgeInsets.all(16),
-                child: SingleChildScrollView(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: _formData.entries
-                        .map(
-                          (e) => Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 4),
-                        child: Text("${e.key.toUpperCase()}: ${e.value}"),
-                      ),
-                    )
-                        .toList(),
-                  ),
-                ),
-              ),
-              TextButton(
-                onPressed: () => Navigator.pop(context),
-                child: Text(
-                  "Close",
-                  style: TextStyle(color: Colors.white),
-                ),
-              ),
-            ],
+            )
+                .toList(),
           ),
         ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text("Close"),
+          ),
+        ],
       ),
     );
   }
+
   Future<void> _goToDashboard() async {
     Navigator.pop(context);
 
@@ -271,6 +234,7 @@ class _ProfileFormScreenState extends State<ProfileFormScreen> {
         ),
       );
     }
+
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 10),
       child: TextFormField(
@@ -284,7 +248,13 @@ class _ProfileFormScreenState extends State<ProfileFormScreen> {
             borderSide: BorderSide.none,
           ),
         ),
-        validator: (value) => (value == null || value.isEmpty) ? "Enter $label" : null,
+        validator: (value) {
+          if (value == null || value.isEmpty) return "Enter $label";
+          if (key == 'phone_number' && value.length < 10) {
+            return "Enter a valid phone number";
+          }
+          return null;
+        },
         onSaved: (value) => _formData[key] = value!,
       ),
     );
@@ -326,6 +296,7 @@ class _ProfileFormScreenState extends State<ProfileFormScreen> {
                   ),
                   const SizedBox(height: 10),
                   _buildTextField("Name", "name"),
+                  _buildTextField("Phone Number", "phone_number", keyboardType: TextInputType.phone),
                   _buildTextField("Field", "field"),
                   _buildTextField("GPA", "gpa", keyboardType: TextInputType.number),
                   _buildTextField("Extracurricular Activities", "extracurricular_activities"),
@@ -349,7 +320,7 @@ class _ProfileFormScreenState extends State<ProfileFormScreen> {
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(30),
                       gradient: const LinearGradient(
-                        colors: [Color(0xFFA59CA8), Color(0xFFA59CA8)],
+                        colors: [Color(0xFF7B1FA2), Color(0xFFE040FB)],
                       ),
                     ),
                     child: InkWell(

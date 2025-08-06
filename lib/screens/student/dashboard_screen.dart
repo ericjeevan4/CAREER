@@ -27,15 +27,6 @@ class StudentDashboardScreen extends StatelessWidget {
             );
           },
         ),
-        PopupMenuItem(
-          child: const Text('Logout'),
-          onTap: () async {
-            await FirebaseAuth.instance.signOut();
-            if (context.mounted) {
-              Navigator.popUntil(context, (route) => route.isFirst);
-            }
-          },
-        ),
       ],
     );
   }
