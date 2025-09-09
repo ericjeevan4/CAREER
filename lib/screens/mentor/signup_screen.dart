@@ -42,7 +42,7 @@ class _MentorSignupScreenState extends State<MentorSignupScreen> {
       );
 
       // ✅ Save role to Firestore
-      await _firestore.saveUserRole(_emailController.text.trim(), "mentor");
+      final role = await _firestore.getUserRole();
 
       Navigator.pushReplacement(
         context,
@@ -129,36 +129,36 @@ class _MentorSignupScreenState extends State<MentorSignupScreen> {
                       Icons.lock_outline,
                     ),
                     validator: (val) =>
-                        val!.isEmpty ? "Confirm your password" : null,
+                    val!.isEmpty ? "Confirm your password" : null,
                   ),
                   const SizedBox(height: 32),
                   _loading
                       ? const CircularProgressIndicator()
                       : Container(
-                          width: double.infinity,
-                          height: 50,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(30),
-                            gradient: const LinearGradient(
-                              colors: [Color(0xFF7B1FA2), Color(0xFFE040FB)],
-                            ),
-                          ),
-                          child: InkWell(
-                            borderRadius: BorderRadius.circular(30),
-                            onTap: _signupMentor,
-                            child: const Center(
-                              child: Text(
-                                "SIGN UP",
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 18,
-                                  letterSpacing: 1.2,
-                                ),
-                              ),
-                            ),
+                    width: double.infinity,
+                    height: 50,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(30),
+                      gradient: const LinearGradient(
+                        colors: [Color(0xFF7B1FA2), Color(0xFFE040FB)],
+                      ),
+                    ),
+                    child: InkWell(
+                      borderRadius: BorderRadius.circular(30),
+                      onTap: _signupMentor,
+                      child: const Center(
+                        child: Text(
+                          "SIGN UP",
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 18,
+                            letterSpacing: 1.2,
                           ),
                         ),
+                      ),
+                    ),
+                  ),
                   const SizedBox(height: 20),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,

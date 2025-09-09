@@ -22,18 +22,15 @@ class MyApp extends StatelessWidget {
     final user = FirebaseAuth.instance.currentUser;
 
     if (user != null) {
-      final email = user.email;
-      if (email != null) {
-        final role = await FirestoreService().getUserRole(email);
-        if (role == 'student') {
-          return const StudentDashboardScreen();
-        } else if (role == 'mentor') {
-          return const MentorDashboardScreen();
-        }
+      final role = await FirestoreService().getUserRole();
+      if (role == 'student') {
+        return const StudentDashboardScreen();
+      } else if (role == 'mentor') {
+        return const MentorDashboardScreen();
       }
     }
 
-    return const RoleSelectionScreen(); // Default screen if not logged in or role not found
+    return const RoleSelectionScreen(); // Default if not logged in or role not found
   }
 
   @override
@@ -65,17 +62,18 @@ class MyApp extends StatelessWidget {
         ),
       ),
 
-      // ✅ Use onGenerateRoute to pass arguments to AiSuggestionScreen
+      // ✅ Route setup
       onGenerateRoute: (settings) {
         if (settings.name == '/ai') {
           final args = settings.arguments as String;
           return MaterialPageRoute(
-            builder: (_) => AiSuggestionScreen(career: args),
+            builder: (_) => AiSuggestionScreen(career: args), // FIXED ✅
           );
         }
-        return null; // Let it fall back if no matching route
+        return null; // fallback
       },
 
+      // ✅ Start screen decided by Firebase login + role
       home: FutureBuilder<Widget>(
         future: _determineStartScreen(),
         builder: (context, snapshot) {

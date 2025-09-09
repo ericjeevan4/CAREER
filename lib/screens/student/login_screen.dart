@@ -29,7 +29,7 @@ class _StudentLoginScreenState extends State<StudentLoginScreen> {
         password: _passwordController.text.trim(),
       );
 
-      final role = await _firestore.getUserRole(_emailController.text.trim());
+      final role = await _firestore.getUserRole();
       if (role != 'student') {
         await _auth.signOut();
         throw FirebaseAuthException(
@@ -120,30 +120,30 @@ class _StudentLoginScreenState extends State<StudentLoginScreen> {
                   _loading
                       ? const CircularProgressIndicator()
                       : Container(
-                          width: double.infinity,
-                          height: 50,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(30),
-                            gradient: const LinearGradient(
-                              colors: [Color(0xFF7B1FA2), Color(0xFFE040FB)],
-                            ),
-                          ),
-                          child: InkWell(
-                            borderRadius: BorderRadius.circular(30),
-                            onTap: _loginUser,
-                            child: const Center(
-                              child: Text(
-                                "LOGIN",
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 18,
-                                  letterSpacing: 1.2,
-                                ),
-                              ),
-                            ),
+                    width: double.infinity,
+                    height: 50,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(30),
+                      gradient: const LinearGradient(
+                        colors: [Color(0xFF7B1FA2), Color(0xFFE040FB)],
+                      ),
+                    ),
+                    child: InkWell(
+                      borderRadius: BorderRadius.circular(30),
+                      onTap: _loginUser,
+                      child: const Center(
+                        child: Text(
+                          "LOGIN",
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 18,
+                            letterSpacing: 1.2,
                           ),
                         ),
+                      ),
+                    ),
+                  ),
                   const SizedBox(height: 20),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
